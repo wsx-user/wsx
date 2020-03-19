@@ -1,0 +1,36 @@
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split,GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+ 
+# 加载数据
+iris = load_iris()
+ 
+# 划分数据集
+x_train,x_test,y_train,y_test = train_test_split(iris.data,iris.target,test_size=0.3,random_state=8)
+ 
+# 标准化
+transfer = StandardScaler()
+x_train = transfer.fit_transform(x_train)
+x_test = transfer.transform(x_test)
+ 
+# 指定算法及模型选择与调优——网格搜索和交叉验证
+estimator = SVC()
+param_dict = {"C": [0.62]}
+estimator = GridSearchCV(estimator, param_grid=param_dict, cv=3)
+ 
+# 训练模型
+estimator.fit(x_train,y_train)
+ 
+# 模型评估
+# 方法一 比对真实值与预测值
+y_predict = estimator.predict(x_test)
+y_test == y_predict
+# 方法二 计算准确率
+score = estimator.score(x_test,y_test)   
+print("准确率为：\n", score)
+ 
+# 然后进行评估查看最终选择的结果和交叉验证的结果
+print("最佳参数：\n", estimator.best_params_)
+print("在交叉验证中验证的最好结果：\n", estimator.best_score_)
+print("最佳参数模型(最佳估计器)：\n", estimator.best_estimator_)
